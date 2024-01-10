@@ -29,11 +29,9 @@ mbill = np.mat(bill)
 mtip = np.mat(tip)
 mbillMatCol = np.shape(mbill)[1]
 onesArray = np.mat(np.ones(mbillMatCol))
-# hstack concate horizontal lists it takes one value from the first and
 xmat = np.hstack((onesArray.T, mbill.T))
 ypred = localWeightRegression(xmat, mtip, 2)
 SortIndex = xmat[:, 1].argsort(0)
-# argsort take the index of each and sort them according to the original
 xsort = xmat[SortIndex][:, 0]
 fig = plt.figure()
 ax = fig.add_subplot(1, 1, 1)
