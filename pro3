@@ -7,8 +7,6 @@ with open('data1.csv', 'r') as csvFile:
         a.append(row)
 
 num_attributes = len(a[0]) - 1
-
-# Initialize hypothesis
 s = ['0'] * num_attributes
 G = ['?'] * num_attributes
 
