@@ -1,0 +1,71 @@
+import numpy as np
+import csv
+
+def read_data(filename):
+    with open(filename, 'r') as csvfile:
+        datareader = csv.reader(csvfile)
+        metadata = next(datareader)
+        traindata = [row for row in datareader]
+    return metadata, traindata
+
+def splitDataset(dataset, splitRatio):
+    trainSize = int(len(dataset) * splitRatio)
+    trainSet = dataset[:trainSize]
+    testSet = dataset[trainSize:]
+    return trainSet, testSet
+
+def classify(train, test):
+    train_rows, train_cols = train.shape
+    test_rows, test_cols = test.shape
+
+    print("training data size =", train_rows)
+    print("test data size =", test_rows)
+
+    countYes = np.count_nonzero(train[:, -1] == 'yes')
+    countNo = np.count_nonzero(train[:, -1] == 'no')
+    probYes = countYes / train_rows
+    probNo = countNo / train_rows
+
+    print("target count probability")
+    print('Yes', "\t", countYes, "\t", probYes)
+    print('No', "\t", countNo, "\t", probNo)
+
+    prob_evidence_no = np.zeros(test_cols - 1)
+    prob_evidence_yes = np.zeros(test_cols - 1)
+    accuracy = 0
+
+    for t in range(test_rows):
+        for k in range(test_cols - 1):
+            count1, count0 = 0, 0
+            for j in range(train_rows):
+                if test[t, k] == train[j, k] and train[j, -1] == 'no':
+                    count0 += 1
+                if test[t, k] == train[j, k] and train[j, -1] == 'yes':
+                    count1 += 1
+            prob_evidence_no[k] = count0 / countNo if countNo != 0 else 0
+            prob_evidence_yes[k] = count1 / countYes if countYes != 0 else 0
+
+        prob_no = probNo
+        prob_yes = probYes
+
+        for i in range(test_cols - 1):
+            prob_no *= prob_evidence_no[i]
+            prob_yes *= prob_evidence_yes[i]
+
+        if prob_no > prob_yes:
+            predict = 'no'
+        else:
+            predict = 'yes'
+
+        if predict == test[t, -1]:
+            accuracy += 1
+
+    final_accuracy = (accuracy / test_rows) * 100
+    print("accuracy", final_accuracy, "%")
+
+metadata, traindata = read_data("data6.csv")
+splitRatio = 0.8
+training_set, test_set = splitDataset(traindata, splitRatio)
+training_data = np.array(training_set)
+testing_data = np.array(test_set)
+classify(training_data, testing_data)
