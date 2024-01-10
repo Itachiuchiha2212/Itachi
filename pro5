@@ -1,0 +1,33 @@
+import numpy as np
+X = np.array(([2, 9], [1, 5], [3, 6]), dtype=float)
+y = np.array(([92], [86], [89]), dtype=float)
+X = X / np.amax(X, axis=0)
+y = y / 100
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+def sigmoid_derivative(x):
+    return x * (1 - x)
+learning_rate = 0.1
+num_epochs = 1
+input_layer_neurons = 2
+hidden_layer_neurons = 3
+output_layer_neurons = 1
+hidden_weights = np.random.uniform(size=(input_layer_neurons, hidden_layer_neurons))
+hidden_biases = np.random.uniform(size=(1, hidden_layer_neurons))
+output_weights = np.random.uniform(size=(hidden_layer_neurons, output_layer_neurons))
+output_biases = np.random.uniform(size=(1, output_layer_neurons))
+for i in range(num_epochs):
+    hidden_layer_activation = sigmoid(np.dot(X, hidden_weights) + hidden_biases)
+    output_layer_activation = sigmoid(np.dot(hidden_layer_activation, output_weights) + output_biases)
+    error = y - output_layer_activation
+    output_layer_gradient = error * sigmoid_derivative(output_layer_activation)
+    hidden_layer_gradient = np.dot(output_layer_gradient, output_weights.T) * sigmoid_derivative(hidden_layer_activation)
+    output_weights += np.dot(hidden_layer_activation.T, output_layer_gradient) * learning_rate
+    output_biases += np.sum(output_layer_gradient, axis=0, keepdims=True) * learning_rate
+    hidden_weights += np.dot(X.T, hidden_layer_gradient) * learning_rate
+    hidden_biases += np.sum(hidden_layer_gradient, axis=0, keepdims=True) * learning_rate
+predicted_output = sigmoid(np.dot(sigmoid(np.dot(X, hidden_weights) + hidden_biases), output_weights) + output_biases) * 100
+print("Input: \n" + str(X))
+print("Actual Output: \n" + str(y))
+print("Predicted Output: \n", predicted_output)
+print("Final Error In Predicted Output: \n", str(y - predicted_output))
