@@ -4,7 +4,7 @@ import numpy as np
 
 def kernel(point, xmat, k):
     m, n = np.shape(xmat) # size of matrix m
-    weights = np.mat(np.eye(m)) # np.eye returns mat with 1 in the diagonal
+    weights = np.mat(np.eye(m)) 
     for j in range(m):
         diff = point - xmat[j]
         weights[j, j] = np.exp(diff * diff.T / (-2.0 * k ** 2))
@@ -16,7 +16,7 @@ def localWeight(point, xmat, ymat, k):
     return W
 
 def localWeightRegression(xmat, ymat, k):
-    row, col = np.shape(xmat) # return 244 rows and 2 columns
+    row, col = np.shape(xmat) 
     ypred = np.zeros(row)
     for i in range(row):
         ypred[i] = xmat[i] * localWeight(xmat[i], xmat, ymat, k)
